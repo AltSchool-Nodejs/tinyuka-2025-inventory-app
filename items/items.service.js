@@ -1,37 +1,69 @@
-const items = [];
+const ItemModel = require('./items.model');
 
 // { name: 'Item 1', quantity: 10, exp_date: '2026-01-01' }
-const createItem = (item) => {
-    const randomId = Math.random().toString(36).substring(2, 15);
-    const newItem = { id: randomId, ...item }; // { id: '123', name: 'Item 1', quantity: 10, exp_date: '2026-01-01' }
-    items.push(newItem);
+const createItem = async (item) => {
+    const newItem = await ItemModel.create({
+        name: item.name,
+        quantity: item.quantity,
+        exp_date: item.exp_date
+    })
+
     return newItem;
 };
 
-const getItems = () => {
+const getItems = async ({ page, limit, name, quantity }) => {
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (name) {
+        query.name = { $regex: name, $options: 'i' };
+    }
+
+    if (quantity) {
+        query.quantity = { $eq: quantity };
+    }
+
+    const items = await ItemModel.find(query).skip(skip).limit(limit);
     return items;
 };
 
-const getItemById = (id) => {
-    return items.find(item => item.id === id);
+const getItemById = async (id) => {
+    const item = await ItemModel.findById(id);
+
+    return item;
 };
 
-const updateItem = (id, item) => {
-    const index = items.findIndex(item => item.id === id);
-    if (index !== -1) {
-        items[index] = item;
-        return item;
+
+// { name: 'pants' }
+const updateItem = async (id, item) => {
+    const updatedItem = await ItemModel.findById(id)
+
+    if (!updatedItem) {
+        return null;
     }
-    return null;
+
+    if (item.name) {
+        updatedItem.name = item.name;
+    }
+
+    if (item.quantity) {
+        updatedItem.quantity = item.quantity;
+    }
+
+    if (item.exp_date) {
+        updatedItem.exp_date = item.exp_date;
+    }
+
+    await updatedItem.save();
+
+    return updatedItem;
 };
 
-const deleteItem = (id) => {
-    const index = items.findIndex(item => item.id === id); 
-    if (index !== -1) {
-        items.splice(index, 1);
-        return true;
-    }
-    return false;
+const deleteItem = async (id) => {
+    const deletedItem = await ItemModel.deleteOne({ _id: id });
+
+    return deletedItem.deletedCount > 0;
 };
 
 module.exports = {
