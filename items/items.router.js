@@ -2,14 +2,15 @@ const express = require('express');
 const itemsService = require('./items.service');
 const itemMiddleware = require('./items.middleware');
 const itemController = require('./items.controller');
+const { authenticateToken } = require('../auth/auth.middleware');
 const router = express.Router();
 
 
 // create a new item
-router.post('/', itemMiddleware.validateItem, itemController.createItemController);
+router.post('/', itemMiddleware.validateItem, authenticateToken, itemController.createItemController);
 
 // get all items
-router.get('/', (req, res) => {
+router.get('/', authenticateToken, (req, res) => {
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     const name = req.query.name || null;
@@ -19,7 +20,7 @@ router.get('/', (req, res) => {
 });
 
 // get a single item - id is the path parameter for the request
-router.get('/:id', (req, res) => {
+router.get('/:id', authenticateToken, (req, res) => {
     // const id = req.params.id;
     const { id } = req.params;
     const item = itemsService.getItemById(id);
@@ -31,7 +32,7 @@ router.get('/:id', (req, res) => {
     return res.json(item);
 });
 
-router.patch('/:itemId', (req, res) => {
+router.patch('/:itemId', authenticateToken, (req, res) => {
     const { itemId } = req.params;
     const bodyOfRequest = req.body;
 
@@ -53,7 +54,7 @@ router.patch('/:itemId', (req, res) => {
     return res.json(updatedItem);
 })
 
-router.delete('/:itemId', (req, res) => {
+router.delete('/:itemId', authenticateToken, (req, res) => {
     const { itemId } = req.params;
     const deleted = itemsService.deleteItem(itemId);
     if (!deleted) {

@@ -5,6 +5,7 @@ const itemsService = require('./items/items.service');
 const path = require('path');
 const { connectDB } = require('./config/database');
 const app = express(); // initialize express
+const authRouter = require('./auth/auth.router');
 
 app.use(express.json()); // middleware to parse the body of the request
 
@@ -28,6 +29,7 @@ app.get('/items', (req, res) => {
 
 
 app.use('/v1/items', itemsRouter);
+app.use('/v1/auth', authRouter);
 
 // global error handler
 app.use((err, req, res, next) => {
