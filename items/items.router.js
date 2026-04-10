@@ -10,20 +10,20 @@ const router = express.Router();
 router.post('/', itemMiddleware.validateItem, authenticateToken, itemController.createItemController);
 
 // get all items
-router.get('/', authenticateToken, (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     const name = req.query.name || null;
 
-    const items = itemsService.getItems({ page, limit, name });
+    const items = await itemsService.getItems({ page, limit, name });
     res.json(items);
 });
 
 // get a single item - id is the path parameter for the request
-router.get('/:id', authenticateToken, (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     // const id = req.params.id;
     const { id } = req.params;
-    const item = itemsService.getItemById(id);
+    const item = await itemsService.getItemById(id);
 
     if (!item) {
         return res.status(404).json({ message: 'Item not found' });
@@ -32,11 +32,11 @@ router.get('/:id', authenticateToken, (req, res) => {
     return res.json(item);
 });
 
-router.patch('/:itemId', authenticateToken, (req, res) => {
+router.patch('/:itemId', authenticateToken, async (req, res) => {
     const { itemId } = req.params;
     const bodyOfRequest = req.body;
 
-    const item = itemsService.getItemById(itemId);
+    const item = await itemsService.getItemById(itemId);
 
     if (!item) {
         return res.status(404).json({ message: 'Item not found' });
@@ -48,15 +48,15 @@ router.patch('/:itemId', authenticateToken, (req, res) => {
     const newItem = { ...item, ...bodyOfRequest }
 
 
-    const updatedItem = itemsService.updateItem(itemId, newItem);
+    const updatedItem = await itemsService.updateItem(itemId, newItem);
 
 
     return res.json(updatedItem);
 })
 
-router.delete('/:itemId', authenticateToken, (req, res) => {
+router.delete('/:itemId', authenticateToken, async (req, res) => {
     const { itemId } = req.params;
-    const deleted = itemsService.deleteItem(itemId);
+    const deleted = await itemsService.deleteItem(itemId);
     if (!deleted) {
         return res.status(404).json({ message: 'Item not found' });
     }
