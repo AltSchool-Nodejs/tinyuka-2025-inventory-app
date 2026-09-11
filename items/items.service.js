@@ -3,6 +3,7 @@ const ItemModel = require('./items.model');
 // { name: 'Item 1', quantity: 10, exp_date: '2026-01-01' }
 const createItem = async (item) => {
     // new changes were made here!
+    // this just adds a new comment to make this function clearer
     const newItem = await ItemModel.create({
         name: item.name,
         quantity: item.quantity,
