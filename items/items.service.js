@@ -9,6 +9,7 @@ const createItem = async (item) => {
         quantity: item.quantity,
         exp_date: item.exp_date,
         color: 'black', 
+        size: 'any'
     })
 
     return newItem;
