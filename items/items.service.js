@@ -7,7 +7,8 @@ const createItem = async (item) => {
     const newItem = await ItemModel.create({
         name: item.name,
         quantity: item.quantity,
-        exp_date: item.exp_date
+        exp_date: item.exp_date,
+        size: 'any'
     })
 
     return newItem;
